@@ -43,7 +43,7 @@ const Dashboard: React.FC = () => {
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'date', direction: 'desc' });
   const [pagination, setPagination] = useState<PaginationConfig>({
     page: 1,
-    limit: 10,
+    limit: 5,
     total: 0,
     totalPages: 0,
   });

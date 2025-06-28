@@ -126,8 +126,8 @@ export const transactionsAPI = {
 export const analyticsAPI = {
   getAnalytics: async (): Promise<AnalyticsData> => {
     try {
-      // Get recent transactions to calculate analytics
-      const transactionsResponse = await transactionsAPI.getTransactions({}, { key: 'date', direction: 'desc' }, { page: 1, limit: 100 });
+      // Get recent transactions to calculate analytics (increase limit to get all historical data)
+      const transactionsResponse = await transactionsAPI.getTransactions({}, { key: 'date', direction: 'desc' }, { page: 1, limit: 1000 });
       const transactions = transactionsResponse.transactions;
 
       // Calculate stats using utility functions
@@ -205,6 +205,8 @@ export const dataUtils = {
       status: 'Status',
       date: 'Date',
       user_id: 'User ID',
+      user_profile: 'Profile URL',
+      user_name: 'User Name',
       createdAt: 'Created At',
       updatedAt: 'Updated At',
     };

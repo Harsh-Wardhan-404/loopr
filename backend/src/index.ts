@@ -177,7 +177,7 @@ app.get('/profile', authenticateToken, async (req: AuthRequest, res: Response) =
 // Protected route - Get transactions for charts
 app.get('/transactions', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const { page = 1, limit = 50, category, status, user_id, search } = req.query;
+    const { page = 1, limit = 10, category, status, user_id, search } = req.query;
     
     // Build filter object
     const filter: any = {};

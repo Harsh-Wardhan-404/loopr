@@ -67,8 +67,85 @@ const seedDatabase = async () => {
       };
     });
 
-    await Transaction.insertMany(formattedTransactions);
-    console.log(`✅ Seeded ${formattedTransactions.length} transactions`);
+    // Generate additional historical transactions for 2023 and early 2022
+    const generateHistoricalTransactions = () => {
+      const historicalTransactions = [];
+      let currentId = formattedTransactions.length + 1;
+      
+      // Generate data for 2023 (12 months) and 2022 (6 months)
+      const startDate = new Date('2022-07-01');
+      const endDate = new Date('2024-01-01');
+      
+      // Generate 15-25 transactions per month for 18 months = ~300-450 additional transactions
+      const monthsDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 30));
+      
+      for (let monthOffset = 0; monthOffset < monthsDiff; monthOffset++) {
+        const monthDate = new Date(startDate);
+        monthDate.setMonth(monthDate.getMonth() + monthOffset);
+        
+        // Generate 15-25 transactions per month
+        const transactionsInMonth = 15 + Math.floor(Math.random() * 10);
+        
+        for (let i = 0; i < transactionsInMonth; i++) {
+          const dayOfMonth = 1 + Math.floor(Math.random() * 28); // 1-28 to avoid month overflow
+          const hour = Math.floor(Math.random() * 24);
+          const minute = Math.floor(Math.random() * 60);
+          const second = Math.floor(Math.random() * 60);
+          
+          const transactionDate = new Date(monthDate.getFullYear(), monthDate.getMonth(), dayOfMonth, hour, minute, second);
+          
+          const isRevenue = Math.random() > 0.45; // 55% revenue, 45% expenses for growth
+          const category = isRevenue ? 'Revenue' : 'Expense';
+          const descriptions = isRevenue ? revenueDescriptions : expenseDescriptions;
+          const description = descriptions[Math.floor(Math.random() * descriptions.length)];
+          
+          // Vary amounts realistically
+          let amount;
+          if (isRevenue) {
+            // Revenue: $500 - $5000, with some larger deals
+            amount = Math.random() > 0.1 ? 
+              500 + Math.random() * 4500 : 
+              5000 + Math.random() * 10000;
+          } else {
+            // Expenses: $100 - $3000, with some larger purchases
+            amount = Math.random() > 0.15 ? 
+              100 + Math.random() * 2900 : 
+              3000 + Math.random() * 7000;
+          }
+          amount = Math.round(amount * 100) / 100; // Round to 2 decimal places
+          
+          const status = Math.random() > 0.2 ? 'Paid' : 'Pending'; // 80% paid, 20% pending
+          const userIndex = Math.floor(Math.random() * userNames.length);
+          const profileUrls = [
+            "https://thispersondoesnotexist.com/",
+            "https://randomuser.me/api/portraits/men/1.jpg",
+            "https://randomuser.me/api/portraits/women/1.jpg",
+            "https://randomuser.me/api/portraits/men/2.jpg",
+            "https://randomuser.me/api/portraits/women/2.jpg"
+          ];
+          
+          historicalTransactions.push({
+            id: currentId++,
+            date: transactionDate,
+            amount: amount,
+            description: description,
+            category: category,
+            status: status,
+            user_id: `user_00${(userIndex % 4) + 1}`,
+            user_profile: profileUrls[userIndex],
+            user_name: userNames[userIndex]
+          });
+        }
+      }
+      
+      return historicalTransactions;
+    };
+
+    const historicalTransactions = generateHistoricalTransactions();
+    const allTransactions = [...formattedTransactions, ...historicalTransactions];
+
+    await Transaction.insertMany(allTransactions);
+    console.log(`✅ Seeded ${allTransactions.length} transactions (${formattedTransactions.length} from JSON + ${historicalTransactions.length} historical)`);
 
     // Generate summary statistics
     const totalRevenue = await Transaction.aggregate([
@@ -87,7 +164,7 @@ const seedDatabase = async () => {
     console.log(`Total Paid Revenue: $${totalRevenue[0]?.total?.toLocaleString() || 0}`);
     console.log(`Total Paid Expenses: $${totalExpenses[0]?.total?.toLocaleString() || 0}`);
     console.log(`Pending Transactions: ${pendingTransactions}`);
-    console.log(`Total Transactions: ${formattedTransactions.length}`);
+    console.log(`Total Transactions: ${allTransactions.length}`);
     console.log(`Total Users: ${createdUsers.length}`);
 
     console.log('\n🎉 Database seeded successfully!');
