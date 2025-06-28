@@ -140,20 +140,10 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
               </button>
             </th>
             <th>
-              <button
-                onClick={() => handleSort('amount')}
-                className="sort-button"
-              >
-                Amount {getSortIcon('amount')}
-              </button>
+              Amount
             </th>
             <th>
-              <button
-                onClick={() => handleSort('status')}
-                className="sort-button"
-              >
-                Status {getSortIcon('status')}
-              </button>
+              Status
             </th>
           </tr>
         </thead>

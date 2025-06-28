@@ -177,7 +177,7 @@ app.get('/profile', authenticateToken, async (req: AuthRequest, res: Response) =
 // Protected route - Get transactions for charts
 app.get('/transactions', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const { page = 1, limit = 10, category, status, user_id, search } = req.query;
+    const { page = 1, limit = 10, category, status, user_id, search, sortBy, sortOrder } = req.query;
     
     // Build filter object
     const filter: any = {};
@@ -199,12 +199,32 @@ app.get('/transactions', authenticateToken, async (req: AuthRequest, res: Respon
       ];
     }
 
+    // Build sort object
+    let sortObject: any = { date: -1 }; // Default sort by date descending
+    
+    if (sortBy && typeof sortBy === 'string') {
+      const direction = sortOrder === 'asc' ? 1 : -1;
+      
+      // Map frontend field names to backend field names if needed
+      const fieldMap: { [key: string]: string } = {
+        'description': 'description',
+        'date': 'date',
+        'amount': 'amount',
+        'status': 'status',
+        'user_name': 'user_name',
+        'category': 'category'
+      };
+      
+      const dbField = fieldMap[sortBy] || sortBy;
+      sortObject = { [dbField]: direction };
+    }
+
     // Calculate pagination
     const skip = (Number(page) - 1) * Number(limit);
 
     // Get transactions
     const transactions = await Transaction.find(filter)
-      .sort({ date: -1 })
+      .sort(sortObject)
       .skip(skip)
       .limit(Number(limit));
 
@@ -213,8 +233,11 @@ app.get('/transactions', authenticateToken, async (req: AuthRequest, res: Respon
     res.json({
       transactions,
       pagination: {
-        currentPage: Number(page),
+        page: Number(page),
+        limit: Number(limit),
+        total: total,
         totalPages: Math.ceil(total / Number(limit)),
+        currentPage: Number(page),
         totalTransactions: total,
         hasNext: skip + transactions.length < total,
         hasPrev: Number(page) > 1
