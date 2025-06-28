@@ -177,13 +177,27 @@ app.get('/profile', authenticateToken, async (req: AuthRequest, res: Response) =
 // Protected route - Get transactions for charts
 app.get('/transactions', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const { page = 1, limit = 50, category, status, user_id } = req.query;
+    const { page = 1, limit = 50, category, status, user_id, search } = req.query;
     
     // Build filter object
     const filter: any = {};
     if (category) filter.category = category;
     if (status) filter.status = status;
     if (user_id) filter.user_id = user_id;
+
+    // Add search functionality
+    if (search && typeof search === 'string') {
+      const searchRegex = new RegExp(search.trim(), 'i'); // Case-insensitive search
+      const amountSearch = parseFloat(search.replace(/[$,]/g, '')); // Parse potential amount search
+      
+      filter.$or = [
+        { description: searchRegex },
+        { user_name: searchRegex },
+        { user_id: searchRegex },
+        // Search by amount if the search term is a number
+        ...((!isNaN(amountSearch) && amountSearch > 0) ? [{ amount: amountSearch }] : [])
+      ];
+    }
 
     // Calculate pagination
     const skip = (Number(page) - 1) * Number(limit);

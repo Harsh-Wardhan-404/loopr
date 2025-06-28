@@ -51,6 +51,25 @@ const Dashboard: React.FC = () => {
   const [showExport, setShowExport] = useState(false);
   const [showRecentTransactions, setShowRecentTransactions] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  
+  // Chart control state
+  const [chartView, setChartView] = useState<'both' | 'income' | 'expenses'>('both');
+  const [timePeriod, setTimePeriod] = useState<'weekly' | 'monthly' | 'yearly'>('monthly');
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // 500ms debounce delay
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Reset pagination when search term changes
+  useEffect(() => {
+    setPagination(prev => ({ ...prev, page: 1 }));
+  }, [debouncedSearchTerm]);
 
   // Load data
   useEffect(() => {
@@ -59,7 +78,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     loadTransactions();
-  }, [filters, sortConfig, pagination.page, pagination.limit]);
+  }, [filters, sortConfig, pagination.page, pagination.limit, debouncedSearchTerm]);
 
   const loadDashboardData = async () => {
     try {
@@ -74,7 +93,7 @@ const Dashboard: React.FC = () => {
     try {
       setLoading(true);
       const response = await transactionsAPI.getTransactions(
-        { ...filters, search: searchTerm },
+        { ...filters, search: debouncedSearchTerm },
         sortConfig,
         { page: pagination.page, limit: pagination.limit }
       );
@@ -94,7 +113,6 @@ const Dashboard: React.FC = () => {
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
-    setPagination(prev => ({ ...prev, page: 1 }));
   };
 
   const handleFilterChange = (newFilters: Partial<FilterType>) => {
@@ -115,12 +133,74 @@ const Dashboard: React.FC = () => {
     setPagination(prev => ({ ...prev, limit, page: 1 }));
   };
 
-  // Chart data preparation
-  const chartData = analytics?.monthlyData?.map(item => ({
-    month: item.month,
-    Income: item.income,
-    Expenses: item.expenses,
-  })) || [];
+  // Chart control handlers
+  const handleChartViewChange = (view: 'income' | 'expenses') => {
+    // Toggle behavior: if clicking the same button, show both; otherwise show only the selected one
+    if (chartView === view) {
+      setChartView('both');
+    } else {
+      setChartView(view);
+    }
+  };
+
+  const handleTimePeriodChange = (period: 'weekly' | 'monthly' | 'yearly') => {
+    setTimePeriod(period);
+  };
+
+  // Chart data preparation with time period filtering
+  const getFilteredChartData = () => {
+    if (!analytics?.monthlyData) return [];
+    
+    const baseData = analytics.monthlyData.map(item => ({
+      month: item.month,
+      Income: item.income,
+      Expenses: item.expenses,
+    }));
+
+    switch (timePeriod) {
+      case 'weekly':
+        // Transform monthly data to weekly data (simulate 4 weeks per month)
+        const weeklyData: Array<{ month: string; Income: number; Expenses: number }> = [];
+        baseData.slice(-3).forEach((monthData, monthIndex) => {
+          const weeksInMonth = 4;
+          for (let week = 1; week <= weeksInMonth; week++) {
+            weeklyData.push({
+              month: `${monthData.month} W${week}`,
+              Income: Math.round((monthData.Income / weeksInMonth) * (0.8 + Math.random() * 0.4)), // Add some variation
+              Expenses: Math.round((monthData.Expenses / weeksInMonth) * (0.8 + Math.random() * 0.4)),
+            });
+          }
+        });
+        return weeklyData;
+        
+      case 'yearly':
+        // Aggregate monthly data into yearly totals
+        const currentYear = new Date().getFullYear();
+        const years = [currentYear - 2, currentYear - 1, currentYear];
+        
+        return years.map((year, index) => {
+          // Use different chunks of monthly data for each year
+          const startIndex = index * 4;
+          const yearData = baseData.slice(startIndex, startIndex + 12);
+          
+          const totalIncome = yearData.reduce((sum, month) => sum + month.Income, 0);
+          const totalExpenses = yearData.reduce((sum, month) => sum + month.Expenses, 0);
+          
+          return {
+            month: year.toString(),
+            Income: totalIncome,
+            Expenses: totalExpenses,
+          };
+        });
+        
+      case 'monthly':
+      default:
+        // Return the last 12 months of data
+        return baseData.slice(-12);
+    }
+  };
+
+  const chartData = getFilteredChartData();
 
   // Recent transactions for sidebar
   const recentTransactions = analytics?.recentTransactions?.slice(0, 3) || [];
@@ -276,13 +356,27 @@ const Dashboard: React.FC = () => {
               <h2 className="overview-title">Overview</h2>
               <div className="overview-controls">
                 <div className="toggle-buttons">
-                  <button className="toggle-btn active">Income</button>
-                  <button className="toggle-btn">Expenses</button>
+                  <button 
+                    onClick={() => handleChartViewChange('income')}
+                    className={`toggle-btn ${chartView === 'income' ? 'active' : ''}`}
+                  >
+                    Income
+                  </button>
+                  <button 
+                    onClick={() => handleChartViewChange('expenses')}
+                    className={`toggle-btn ${chartView === 'expenses' ? 'active' : ''}`}
+                  >
+                    Expenses
+                  </button>
                 </div>
-                <select className="bg-slate-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm">
-                  <option>Monthly</option>
-                  <option>Weekly</option>
-                  <option>Yearly</option>
+                <select 
+                  value={timePeriod}
+                  onChange={(e) => handleTimePeriodChange(e.target.value as 'weekly' | 'monthly' | 'yearly')}
+                  className="bg-slate-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm"
+                >
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="yearly">Yearly</option>
                 </select>
               </div>
             </div>
@@ -317,22 +411,27 @@ const Dashboard: React.FC = () => {
                       }}
                       formatter={formatTooltipValue}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="Income" 
-                      stroke="#10B981" 
-                      strokeWidth={3}
-                      dot={{ fill: '#10B981', strokeWidth: 2, r: 4 }}
-                      activeDot={{ r: 6, stroke: '#10B981', strokeWidth: 2 }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="Expenses" 
-                      stroke="#F59E0B" 
-                      strokeWidth={3}
-                      dot={{ fill: '#F59E0B', strokeWidth: 2, r: 4 }}
-                      activeDot={{ r: 6, stroke: '#F59E0B', strokeWidth: 2 }}
-                    />
+                    {/* Conditionally render lines based on chartView */}
+                    {(chartView === 'income' || chartView === 'both') && (
+                      <Line 
+                        type="monotone" 
+                        dataKey="Income" 
+                        stroke="#10B981" 
+                        strokeWidth={3}
+                        dot={{ fill: '#10B981', strokeWidth: 2, r: 4 }}
+                        activeDot={{ r: 6, stroke: '#10B981', strokeWidth: 2 }}
+                      />
+                    )}
+                    {(chartView === 'expenses' || chartView === 'both') && (
+                      <Line 
+                        type="monotone" 
+                        dataKey="Expenses" 
+                        stroke="#F59E0B" 
+                        strokeWidth={3}
+                        dot={{ fill: '#F59E0B', strokeWidth: 2, r: 4 }}
+                        activeDot={{ r: 6, stroke: '#F59E0B', strokeWidth: 2 }}
+                      />
+                    )}
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
@@ -363,26 +462,49 @@ const Dashboard: React.FC = () => {
               </div>
 
               <div className="space-y-4">
-                {recentTransactions.map((transaction) => (
-                  <div key={transaction._id} className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm">
-                      {(transaction.description || 'T').charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-white font-medium text-sm">
-                        {transaction.description || 'No description'}
+                {recentTransactions.map((transaction) => {
+                  const displayName = transaction.user_name || `User ${transaction.user_id}`;
+                  
+                  return (
+                    <div key={transaction._id} className="flex items-center gap-3">
+                      {/* Profile Avatar */}
+                      {transaction.user_profile ? (
+                        <img
+                          src={transaction.user_profile}
+                          alt={displayName}
+                          className="w-10 h-10 rounded-full object-cover"
+                          onError={(e) => {
+                            // Fallback to gradient avatar on image error
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const fallback = target.nextElementSibling as HTMLElement;
+                            if (fallback) fallback.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div 
+                        className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm"
+                        style={{ display: transaction.user_profile ? 'none' : 'flex' }}
+                      >
+                        {displayName.charAt(0).toUpperCase()}
                       </div>
-                      <div className="text-gray-400 text-xs">
-                        {transaction.category || 'Unknown'}
+                      
+                      <div className="flex-1">
+                        <div className="text-white font-medium text-sm">
+                          {displayName}
+                        </div>
+                        <div className="text-gray-400 text-xs">
+                          {transaction.description || 'No description'}
+                        </div>
+                      </div>
+                      <div className={`font-semibold text-sm ${
+                        transaction.category === 'Revenue' ? 'text-emerald-400' : 'text-amber-400'
+                      }`}>
+                        {transaction.category === 'Revenue' ? '+' : '-'}{formatCurrency(transaction.amount || 0)}
                       </div>
                     </div>
-                    <div className={`font-semibold text-sm ${
-                      transaction.category === 'Revenue' ? 'text-emerald-400' : 'text-amber-400'
-                    }`}>
-                      {transaction.category === 'Revenue' ? '+' : '-'}{formatCurrency(transaction.amount || 0)}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

@@ -16,6 +16,7 @@ export interface Transaction {
   status: 'Paid' | 'Pending';
   date: string;
   user_profile?: string;
+  user_name: string;
   createdAt?: string;
   updatedAt?: string;
 }

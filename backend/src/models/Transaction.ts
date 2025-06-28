@@ -8,7 +8,8 @@ export interface ITransaction extends Document {
   category: 'Revenue' | 'Expense';
   status: 'Paid' | 'Pending';
   user_id: string;
-  user_profile: string;
+  user_profile?: string; // Profile image URL
+  user_name: string; // User's display name
   createdAt: Date;
 }
 
@@ -46,6 +47,10 @@ const TransactionSchema: Schema = new Schema({
     required: true
   },
   user_profile: {
+    type: String,
+    required: false // Profile image URL is optional
+  },
+  user_name: {
     type: String,
     required: true
   },

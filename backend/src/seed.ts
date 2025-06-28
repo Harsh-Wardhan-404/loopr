@@ -52,7 +52,7 @@ const seedDatabase = async () => {
     
     const userNames = ['John Smith', 'Sarah Johnson', 'Mike Davis', 'Lisa Wilson', 'Admin User'];
     
-    // Convert transaction data to proper format and add descriptions
+    // Convert transaction data to proper format, preserving user_profile URLs and adding user_name
     const formattedTransactions = transactionsData.map((transaction: any, index: number) => {
       const descriptions = transaction.category === 'Revenue' ? revenueDescriptions : expenseDescriptions;
       const description = descriptions[index % descriptions.length];
@@ -61,7 +61,8 @@ const seedDatabase = async () => {
       return {
         ...transaction,
         description: transaction.description || description,
-        user_profile: userName,
+        user_profile: transaction.user_profile, // Keep the original image URL
+        user_name: userName, // Add separate user name field
         date: new Date(transaction.date)
       };
     });

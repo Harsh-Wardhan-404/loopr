@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Eye, Edit, ChevronUp, ChevronDown, Loader, FileX } from 'lucide-react';
 import type { Transaction, SortConfig } from '../types';
 import { dataUtils } from '../services/api';
@@ -16,6 +16,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
   sortConfig,
   onSortChange,
 }) => {
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+
   const handleSort = (key: keyof Transaction) => {
     let direction: 'asc' | 'desc' = 'asc';
     
@@ -67,6 +69,33 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
   const safeLowerCase = (text: string | undefined | null): string => {
     if (!text || typeof text !== 'string') return '';
     return text.toLowerCase();
+  };
+
+  const handleImageError = (transactionId: string) => {
+    setImageErrors(prev => new Set(prev).add(transactionId));
+  };
+
+  const renderProfileAvatar = (transaction: Transaction) => {
+    const hasValidImage = transaction.user_profile && !imageErrors.has(transaction._id);
+    const displayName = transaction.user_name || `User ${transaction.user_id}`;
+    
+    if (hasValidImage) {
+      return (
+        <img
+          src={transaction.user_profile}
+          alt={displayName}
+          className="w-10 h-10 rounded-full object-cover"
+          onError={() => handleImageError(transaction._id)}
+        />
+      );
+    }
+    
+    // Fallback to gradient avatar with first letter
+    return (
+      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm">
+        {displayName.charAt(0).toUpperCase()}
+      </div>
+    );
   };
 
   if (loading) {
@@ -134,12 +163,10 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
               {/* Name Column with Profile Photo */}
               <td className="name-cell">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm">
-                    {(transaction.user_profile || transaction.user_id || 'U').charAt(0).toUpperCase()}
-                  </div>
+                  {renderProfileAvatar(transaction)}
                   <div>
                     <div className="text-white font-medium text-sm">
-                      {transaction.user_profile || `User ${transaction.user_id}`}
+                      {transaction.user_name || `User ${transaction.user_id}`}
                     </div>
                     <div className="text-gray-400 text-xs">
                       {truncateText(transaction.description, 20)}
