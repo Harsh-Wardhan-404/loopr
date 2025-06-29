@@ -253,7 +253,7 @@ const LandingPage: React.FC = () => {
                 </h3>
               </div>
               <p className="text-gray-400 text-left">
-                Real-time visualizations with customizable charts and graphs. 
+                Real-time visualizations with customizable charts and graphs.
                 Track income, expenses, and trends with beautiful, responsive dashboards.
               </p>
             </div>
@@ -268,7 +268,7 @@ const LandingPage: React.FC = () => {
                 </h3>
               </div>
               <p className="text-gray-400 text-left">
-                Powerful search and filter capabilities. Sort by date, amount, category, 
+                Powerful search and filter capabilities. Sort by date, amount, category,
                 status, and more to find exactly what you need.
               </p>
             </div>
@@ -283,7 +283,7 @@ const LandingPage: React.FC = () => {
                 </h3>
               </div>
               <p className="text-gray-400 text-left">
-                Export your data with flexible options. Choose columns, apply filters, 
+                Export your data with flexible options. Choose columns, apply filters,
                 and generate professional reports for external analysis.
               </p>
             </div>
@@ -298,7 +298,7 @@ const LandingPage: React.FC = () => {
                 </h3>
               </div>
               <p className="text-gray-400 text-left">
-                Deep insights into your financial data. Track performance metrics, 
+                Deep insights into your financial data. Track performance metrics,
                 identify trends, and make informed business decisions.
               </p>
             </div>
@@ -313,7 +313,7 @@ const LandingPage: React.FC = () => {
                 </h3>
               </div>
               <p className="text-gray-400 text-left">
-                Secure user management with role-based access. Perfect for 
+                Secure user management with role-based access. Perfect for
                 financial teams and collaborative analysis workflows.
               </p>
             </div>
@@ -328,7 +328,7 @@ const LandingPage: React.FC = () => {
                 </h3>
               </div>
               <p className="text-gray-400 text-left">
-                Bank-level security with JWT authentication and encrypted data storage. 
+                Bank-level security with JWT authentication and encrypted data storage.
                 Your financial data is always protected.
               </p>
             </div>
@@ -379,7 +379,7 @@ const LandingPage: React.FC = () => {
             <div className="text-gray-400 md:ml-4">
               <div>© 2025 Penta. All rights reserved.</div>
               <div>
-                Made by <a href="https://harshwardhan.tech" className="text-[#2CFF05] hover:underline">Harshwardhan</a>
+                Made by <a href="https://www.linkedin.com/in/harshwardhan-saindane-7704a1258/" className="text-[#2CFF05] hover:underline">Harshwardhan</a>
               </div>
             </div>
           </div>
