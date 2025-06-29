@@ -25,11 +25,7 @@ function App() {
           {/* Public Routes */}
           <Route 
             path="/" 
-            element={
-              <PublicRoute>
-                <LandingPage />
-              </PublicRoute>
-            } 
+            element={<LandingPage />} 
           />
           <Route 
             path="/login" 

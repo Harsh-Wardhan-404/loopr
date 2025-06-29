@@ -834,67 +834,73 @@ const Dashboard: React.FC = () => {
   // }
 
   return (
-    <div className="dashboard-layout">
+    <div className="flex h-screen bg-gray-900 text-white">
       {/* Sidebar */}
-      <aside className="sidebar">
-        <div className="sidebar-logo">
-          <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-            <BarChart3 className="w-5 h-5 text-white" />
+      <aside className="w-64 bg-gray-900 border-r border-gray-700 p-6 flex flex-col justify-between">
+        <div>
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-10">
+            <Link to="/" className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-[#2CFF05]" />
+              </div>
+              <span className="text-2xl font-bold text-white">Penta</span>
+            </Link>
           </div>
-          <h1>Penta</h1>
-        </div>
 
-        <nav className="sidebar-nav">
-          <Link
-            to="/dashboard"
-            className={`nav-item ${currentPage === 'dashboard' ? 'active' : ''}`}
-          >
-            <LayoutDashboard />
-            <span>Dashboard</span>
-          </Link>
-          <Link
-            to="/transactions"
-            className={`nav-item ${currentPage === 'transactions' ? 'active' : ''}`}
-          >
-            <CreditCard />
-            <span>Transactions</span>
-          </Link>
-          <Link
-            to="/wallet"
-            className={`nav-item ${currentPage === 'wallet' ? 'active' : ''}`}
-          >
-            <Wallet />
-            <span>Wallet</span>
-          </Link>
-          <Link
-            to="/analytics"
-            className={`nav-item ${currentPage === 'analytics' ? 'active' : ''}`}
-          >
-            <BarChart3 />
-            <span>Analytics</span>
-          </Link>
-          <Link
-            to="/personal"
-            className={`nav-item ${currentPage === 'personal' ? 'active' : ''}`}
-          >
-            <User />
-            <span>Personal</span>
-          </Link>
-          <Link
-            to="/message"
-            className={`nav-item ${currentPage === 'message' ? 'active' : ''}`}
-          >
-            <MessageSquare />
-            <span>Message</span>
-          </Link>
-          <Link
-            to="/setting"
-            className={`nav-item ${currentPage === 'setting' ? 'active' : ''}`}
-          >
-            <Settings />
-            <span>Setting</span>
-          </Link>
-        </nav>
+          {/* Navigation */}
+          <nav>
+            <Link
+              to="/dashboard"
+              className={`nav-item ${currentPage === 'dashboard' ? 'active' : ''}`}
+            >
+              <LayoutDashboard />
+              <span>Dashboard</span>
+            </Link>
+            <Link
+              to="/transactions"
+              className={`nav-item ${currentPage === 'transactions' ? 'active' : ''}`}
+            >
+              <CreditCard />
+              <span>Transactions</span>
+            </Link>
+            <Link
+              to="/wallet"
+              className={`nav-item ${currentPage === 'wallet' ? 'active' : ''}`}
+            >
+              <Wallet />
+              <span>Wallet</span>
+            </Link>
+            <Link
+              to="/analytics"
+              className={`nav-item ${currentPage === 'analytics' ? 'active' : ''}`}
+            >
+              <BarChart3 />
+              <span>Analytics</span>
+            </Link>
+            <Link
+              to="/personal"
+              className={`nav-item ${currentPage === 'personal' ? 'active' : ''}`}
+            >
+              <User />
+              <span>Personal</span>
+            </Link>
+            <Link
+              to="/message"
+              className={`nav-item ${currentPage === 'message' ? 'active' : ''}`}
+            >
+              <MessageSquare />
+              <span>Message</span>
+            </Link>
+            <Link
+              to="/setting"
+              className={`nav-item ${currentPage === 'setting' ? 'active' : ''}`}
+            >
+              <Settings />
+              <span>Setting</span>
+            </Link>
+          </nav>
+        </div>
       </aside>
 
       {/* Main Content */}
@@ -919,7 +925,7 @@ const Dashboard: React.FC = () => {
                 placeholder="Search for anything..."
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="search-input pl-10"
+                className="w-full bg-gray-800 border border-gray-700 rounded-md py-2 px-4 text-white focus:outline-none focus:ring-2 focus:ring-[#2CFF05]/50 pl-10"
               />
             </div>
           </div>

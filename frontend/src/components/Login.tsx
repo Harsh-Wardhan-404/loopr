@@ -189,8 +189,8 @@ const Login: React.FC = () => {
           <div className="bg-gray-900 border border-gray-700 rounded-lg p-4">
             <p className="text-sm text-gray-300 font-medium mb-2">Demo Credentials</p>
             <p className="text-xs text-gray-400">
-              Email: demo@penta.com<br />
-              Password: demo123
+              Email: h@gmail.com<br />
+              Password: harsh@123 
             </p>
           </div>
         </div>
