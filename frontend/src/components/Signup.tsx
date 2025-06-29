@@ -99,37 +99,37 @@ const Signup: React.FC = () => {
     agreeToTerms;
 
   return (
-    <div className="auth-page min-h-screen flex items-center justify-center py-12 px-4">
+    <div className="bg-black min-h-screen flex items-center justify-center py-12 px-4 text-white">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
           <Link to="/" className="inline-flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <BarChart3 className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
+              <BarChart3 className="w-6 h-6 text-[#2CFF05]" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">Penta Analytics</span>
+            <span className="text-2xl font-bold text-white">Penta</span>
           </Link>
-          <h2 className="text-3xl font-bold text-gray-900">Create your account</h2>
-          <p className="mt-2 text-gray-600">
+          <h2 className="text-3xl font-bold text-white">Create your account</h2>
+          <p className="mt-2 text-gray-400">
             Join thousands of analysts using Penta
           </p>
         </div>
 
         {/* Signup Form */}
-        <div className="card">
+        <div className="bg-gray-900 border border-gray-700 rounded-lg p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Error Message */}
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+              <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-red-700">{error}</div>
+                <div className="text-sm text-red-400">{error}</div>
               </div>
             )}
 
             {/* Name Fields */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="form-group">
-                <label htmlFor="firstName" className="form-label">
+              <div>
+                <label htmlFor="firstName" className="text-sm font-medium text-gray-400">
                   First name
                 </label>
                 <input
@@ -140,13 +140,13 @@ const Signup: React.FC = () => {
                   required
                   value={formData.firstName}
                   onChange={handleInputChange}
-                  className="form-input"
+                  className="w-full bg-gray-800 border border-gray-700 rounded-md py-2 px-4 mt-2 text-white focus:outline-none focus:ring-2 focus:ring-[#2CFF05]/50"
                   placeholder="John"
                 />
               </div>
 
-              <div className="form-group">
-                <label htmlFor="lastName" className="form-label">
+              <div>
+                <label htmlFor="lastName" className="text-sm font-medium text-gray-400">
                   Last name
                 </label>
                 <input
@@ -157,15 +157,15 @@ const Signup: React.FC = () => {
                   required
                   value={formData.lastName}
                   onChange={handleInputChange}
-                  className="form-input"
+                  className="w-full bg-gray-800 border border-gray-700 rounded-md py-2 px-4 mt-2 text-white focus:outline-none focus:ring-2 focus:ring-[#2CFF05]/50"
                   placeholder="Doe"
                 />
               </div>
             </div>
 
             {/* Email Field */}
-            <div className="form-group">
-              <label htmlFor="email" className="form-label">
+            <div>
+              <label htmlFor="email" className="text-sm font-medium text-gray-400">
                 Email address
               </label>
               <input
@@ -176,14 +176,14 @@ const Signup: React.FC = () => {
                 required
                 value={formData.email}
                 onChange={handleInputChange}
-                className="form-input"
+                className="w-full bg-gray-800 border border-gray-700 rounded-md py-2 px-4 mt-2 text-white focus:outline-none focus:ring-2 focus:ring-[#2CFF05]/50"
                 placeholder="john@company.com"
               />
             </div>
 
             {/* Password Field */}
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">
+            <div>
+              <label htmlFor="password" className="text-sm font-medium text-gray-400">
                 Password
               </label>
               <div className="relative">
@@ -195,13 +195,13 @@ const Signup: React.FC = () => {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="form-input pr-12"
+                  className="w-full bg-gray-800 border border-gray-700 rounded-md py-2 px-4 mt-2 text-white focus:outline-none focus:ring-2 focus:ring-[#2CFF05]/50 pr-12"
                   placeholder="Create a strong password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-300"
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -214,7 +214,7 @@ const Signup: React.FC = () => {
               {/* Password Requirements */}
               {formData.password && (
                 <div className="mt-3 space-y-2">
-                  <div className="text-sm text-gray-600">Password must contain:</div>
+                  <div className="text-sm text-gray-400">Password must contain:</div>
                   <div className="space-y-1">
                     {Object.entries({
                       'At least 8 characters': passwordValidation.minLength,
@@ -228,7 +228,7 @@ const Signup: React.FC = () => {
                         ) : (
                           <X className="w-4 h-4 text-red-500" />
                         )}
-                        <span className={isValid ? 'text-green-600' : 'text-red-600'}>
+                        <span className={isValid ? 'text-green-400' : 'text-red-400'}>
                           {requirement}
                         </span>
                       </div>
@@ -239,8 +239,8 @@ const Signup: React.FC = () => {
             </div>
 
             {/* Confirm Password Field */}
-            <div className="form-group">
-              <label htmlFor="confirmPassword" className="form-label">
+            <div>
+              <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-400">
                 Confirm password
               </label>
               <div className="relative">
@@ -252,17 +252,13 @@ const Signup: React.FC = () => {
                   required
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className={`form-input pr-12 ${
-                    formData.confirmPassword && !passwordsMatch 
-                      ? 'border-red-300 focus:border-red-500' 
-                      : ''
-                  }`}
-                  placeholder="Confirm your password"
+                  className="w-full bg-gray-800 border border-gray-700 rounded-md py-2 px-4 mt-2 text-white focus:outline-none focus:ring-2 focus:ring-[#2CFF05]/50 pr-12"
+                  placeholder="Re-enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-300"
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -272,35 +268,27 @@ const Signup: React.FC = () => {
                 </button>
               </div>
               {formData.confirmPassword && !passwordsMatch && (
-                <div className="mt-1 text-sm text-red-600">
-                  Passwords do not match
-                </div>
-              )}
-              {formData.confirmPassword && passwordsMatch && (
-                <div className="mt-1 text-sm text-green-600 flex items-center gap-1">
-                  <Check className="w-4 h-4" />
-                  Passwords match
-                </div>
+                <p className="mt-2 text-sm text-red-400">Passwords do not match</p>
               )}
             </div>
 
             {/* Terms Checkbox */}
-            <div className="flex items-start">
+            <div className="flex items-center">
               <input
-                id="terms"
-                name="terms"
+                id="agreeToTerms"
+                name="agreeToTerms"
                 type="checkbox"
                 checked={agreeToTerms}
                 onChange={(e) => setAgreeToTerms(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
+                className="h-4 w-4 bg-gray-700 border-gray-600 rounded text-[#2CFF05] focus:ring-[#2CFF05]/50"
               />
-              <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
+              <label htmlFor="agreeToTerms" className="ml-2 block text-sm text-gray-400">
                 I agree to the{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-500">
+                <a href="#" className="font-medium text-[#2CFF05] hover:underline">
                   Terms of Service
                 </a>{' '}
                 and{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-500">
+                <a href="#" className="font-medium text-[#2CFF05] hover:underline">
                   Privacy Policy
                 </a>
               </label>
@@ -310,31 +298,29 @@ const Signup: React.FC = () => {
             <button
               type="submit"
               disabled={loading || !isFormValid}
-              className={`
-                w-full btn btn-primary
-                ${loading || !isFormValid 
-                  ? 'opacity-50 cursor-not-allowed' 
-                  : 'hover:bg-blue-700'
-                }
-              `}
+              className={`w-full py-3 px-4 rounded-md font-semibold text-center transition-colors
+                ${loading || !isFormValid
+                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                  : 'bg-[#2CFF05] text-black hover:bg-green-400'
+                }`}
             >
               {loading ? (
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
                   Creating account...
                 </div>
               ) : (
-                'Create account'
+                'Create Account'
               )}
             </button>
           </form>
 
           {/* Sign In Link */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-400">
               Already have an account?{' '}
-              <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
-                Sign in here
+              <Link to="/login" className="font-medium text-[#2CFF05] hover:underline">
+                Sign in
               </Link>
             </p>
           </div>
