@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, Edit, ChevronUp, ChevronDown, Loader, FileX } from 'lucide-react';
+import { ChevronUp, ChevronDown, Loader, FileX } from 'lucide-react';
 import type { Transaction, SortConfig } from '../types';
 import { dataUtils } from '../services/api';
 
@@ -38,15 +38,15 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       : <ChevronDown className="sort-icon active" />;
   };
 
-  const handleViewTransaction = (transaction: Transaction) => {
-    // Navigate to transaction detail or open modal
-    console.log('View transaction:', transaction);
-  };
+  // const handleViewTransaction = (transaction: Transaction) => {
+  //   // Navigate to transaction detail or open modal
+  //   console.log('View transaction:', transaction);
+  // };
 
-  const handleEditTransaction = (transaction: Transaction) => {
-    // Navigate to edit form or open modal
-    console.log('Edit transaction:', transaction);
-  };
+  // const handleEditTransaction = (transaction: Transaction) => {
+  //   // Navigate to edit form or open modal
+  //   console.log('Edit transaction:', transaction);
+  // };
 
   const formatCurrency = (amount: number) => {
     return dataUtils.formatCurrency(amount);
@@ -61,10 +61,10 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
   };
 
-  const safeSliceId = (id: string | undefined | null, length: number = 8): string => {
-    if (!id || typeof id !== 'string') return 'N/A';
-    return id.length > length ? id.slice(-length) : id;
-  };
+  // const safeSliceId = (id: string | undefined | null, length: number = 8): string => {
+  //   if (!id || typeof id !== 'string') return 'N/A';
+  //   return id.length > length ? id.slice(-length) : id;
+  // };
 
   const safeLowerCase = (text: string | undefined | null): string => {
     if (!text || typeof text !== 'string') return '';

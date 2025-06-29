@@ -1,7 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { BarChart3, Shield, Download, TrendingUp, Users, DollarSign, Calendar, Filter } from 'lucide-react';
-import { Spotlight } from './ui/Spotlight';
+import { BarChart3, Shield, Download, TrendingUp, Users, Filter } from 'lucide-react';
 import { Hero } from './Hero';
 
 // const LandingPage: React.FC = () => {

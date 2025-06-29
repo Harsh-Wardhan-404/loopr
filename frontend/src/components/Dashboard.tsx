@@ -12,8 +12,6 @@ import {
   Bell,
   Download,
   Filter,
-  Calendar,
-  LogOut,
   TrendingUp,
   TrendingDown,
   DollarSign,
@@ -165,7 +163,7 @@ const Dashboard: React.FC = () => {
       case 'weekly':
         // Transform monthly data to weekly data (simulate 4 weeks per month)
         const weeklyData: Array<{ month: string; Balance: number; Expenses: number }> = [];
-        baseData.slice(-3).forEach((monthData, monthIndex) => {
+        baseData.slice(-3).forEach((monthData) => {
           const weeksInMonth = 4;
           for (let week = 1; week <= weeksInMonth; week++) {
             weeklyData.push({
