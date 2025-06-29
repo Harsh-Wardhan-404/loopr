@@ -369,7 +369,7 @@ const LandingPage: React.FC = () => {
       {/* Footer */}
       <footer className="py-12 bg-black text-white">
         <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row justify-center items-center text-center">
+          <div className="flex flex-col md:flex-row justify-center items-center md:items-baseline text-center">
             <div className="flex items-center gap-3 mb-4 md:mb-0">
               <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
                 <BarChart3 className="w-5 h-5 text-[#2CFF05]" />
@@ -377,7 +377,10 @@ const LandingPage: React.FC = () => {
               <span className="text-xl font-bold">Penta</span>
             </div>
             <div className="text-gray-400 md:ml-4">
-              © 2025 Penta. All rights reserved.
+              <div>© 2025 Penta. All rights reserved.</div>
+              <div>
+                Made by <a href="https://harshwardhan.tech" className="text-[#2CFF05] hover:underline">Harshwardhan</a>
+              </div>
             </div>
           </div>
         </div>

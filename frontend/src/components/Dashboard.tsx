@@ -155,20 +155,20 @@ const Dashboard: React.FC = () => {
 
     const baseData = analytics.monthlyData.map(item => ({
       month: item.month,
-      Balance: item.income,
+      Income: item.income,
       Expenses: item.expenses,
     }));
 
     switch (timePeriod) {
       case 'weekly':
         // Transform monthly data to weekly data (simulate 4 weeks per month)
-        const weeklyData: Array<{ month: string; Balance: number; Expenses: number }> = [];
+        const weeklyData: Array<{ month: string; Income: number; Expenses: number }> = [];
         baseData.slice(-3).forEach((monthData) => {
           const weeksInMonth = 4;
           for (let week = 1; week <= weeksInMonth; week++) {
             weeklyData.push({
               month: `${monthData.month} W${week}`,
-              Balance: Math.round((monthData.Balance / weeksInMonth) * (0.8 + Math.random() * 0.4)), // Add some variation
+              Income: Math.round((monthData.Income / weeksInMonth) * (0.8 + Math.random() * 0.4)), // Add some variation
               Expenses: Math.round((monthData.Expenses / weeksInMonth) * (0.8 + Math.random() * 0.4)),
             });
           }
@@ -185,12 +185,12 @@ const Dashboard: React.FC = () => {
           const startIndex = index * 4;
           const yearData = baseData.slice(startIndex, startIndex + 12);
 
-          const totalIncome = yearData.reduce((sum, month) => sum + month.Balance, 0);
+          const totalIncome = yearData.reduce((sum, month) => sum + month.Income, 0);
           const totalExpenses = yearData.reduce((sum, month) => sum + month.Expenses, 0);
 
           return {
             month: year.toString(),
-            Balance: totalIncome,
+            Income: totalIncome,
             Expenses: totalExpenses,
           };
         });
@@ -305,7 +305,7 @@ const Dashboard: React.FC = () => {
                 onClick={() => handleChartViewChange('income')}
                 className={`toggle-btn ${chartView === 'income' ? 'active' : ''}`}
               >
-                Balance
+                Income
               </button>
               <button
                 onClick={() => handleChartViewChange('expenses')}
@@ -330,7 +330,7 @@ const Dashboard: React.FC = () => {
         <div className="flex items-center justify-center gap-6 mb-4">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-full bg-green-500"></div>
-            <span className="text-sm text-gray-300">Balance</span>
+            <span className="text-sm text-gray-300">Income</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
@@ -344,50 +344,24 @@ const Dashboard: React.FC = () => {
               <div className="text-gray-400">Loading chart...</div>
             </div>
           ) : chartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={300}>
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis
-                  dataKey="month"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#9CA3AF', fontSize: 12 }}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#9CA3AF', fontSize: 12 }}
-                  tickFormatter={formatYAxisTick}
-                />
+                <XAxis dataKey="month" stroke="#9CA3AF" />
+                <YAxis tickFormatter={formatYAxisTick} stroke="#9CA3AF" />
                 <Tooltip
+                  formatter={formatTooltipValue}
                   contentStyle={{
                     backgroundColor: '#1F2937',
-                    border: 'none',
-                    borderRadius: '8px',
-                    color: '#F9FAFB'
+                    borderColor: '#374151',
+                    color: '#E5E7EB',
                   }}
-                  formatter={formatTooltipValue}
                 />
-                {/* Conditionally render lines based on chartView */}
-                {(chartView === 'income' || chartView === 'both') && (
-                  <Line
-                    type="monotone"
-                    dataKey="Balance"
-                    stroke="#22C55E"
-                    strokeWidth={3}
-                    dot={{ fill: '#22C55E', strokeWidth: 2, r: 4 }}
-                    activeDot={{ r: 6, stroke: '#22C55E', strokeWidth: 2 }}
-                  />
+                { (chartView === 'both' || chartView === 'income') && (
+                  <Line type="monotone" dataKey="Income" stroke="#2CFF05" strokeWidth={2} name="Income" />
                 )}
-                {(chartView === 'expenses' || chartView === 'both') && (
-                  <Line
-                    type="monotone"
-                    dataKey="Expenses"
-                    stroke="#EAB308"
-                    strokeWidth={3}
-                    dot={{ fill: '#EAB308', strokeWidth: 2, r: 4 }}
-                    activeDot={{ r: 6, stroke: '#EAB308', strokeWidth: 2 }}
-                  />
+                { (chartView === 'both' || chartView === 'expenses') && (
+                  <Line type="monotone" dataKey="Expenses" stroke="#EAB308" strokeWidth={2} name="Expenses" />
                 )}
               </LineChart>
             </ResponsiveContainer>
