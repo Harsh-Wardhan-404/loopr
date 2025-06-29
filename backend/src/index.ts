@@ -51,7 +51,7 @@ const generateToken = (user: { id: string; email: string }): string => {
 
 // Health check
 app.get('/', (req: Request, res: Response) => {
-  res.json({ 
+  res.json({
     message: 'JWT Auth API with MongoDB is running!',
     database: 'MongoDB',
     endpoints: {
@@ -99,13 +99,13 @@ app.post('/signup', async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error('Signup error:', error);
-    
+
     // Handle MongoDB validation errors
     if (error.name === 'ValidationError') {
       const errors = Object.values(error.errors).map((err: any) => err.message);
       return res.status(400).json({ error: errors.join(', ') });
     }
-    
+
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -125,6 +125,7 @@ app.post('/login', async (req: Request, res: Response) => {
     // Find user
     const user = await User.findOne({ email });
     if (!user) {
+      console.log("User not found");
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
@@ -136,7 +137,7 @@ app.post('/login', async (req: Request, res: Response) => {
 
     // Generate token
     const token = generateToken({ id: (user._id as string).toString(), email: user.email });
-
+    console.log("Login successful, should redirect");
     res.json({
       message: 'Login successful',
       token,
@@ -156,7 +157,7 @@ app.post('/login', async (req: Request, res: Response) => {
 app.get('/profile', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const user = await User.findById(req.user?.id).select('-password');
-    
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -178,7 +179,7 @@ app.get('/profile', authenticateToken, async (req: AuthRequest, res: Response) =
 app.get('/transactions', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const { page = 1, limit = 10, category, status, user_id, search, sortBy, sortOrder } = req.query;
-    
+
     // Build filter object
     const filter: any = {};
     if (category) filter.category = category;
@@ -189,7 +190,7 @@ app.get('/transactions', authenticateToken, async (req: AuthRequest, res: Respon
     if (search && typeof search === 'string') {
       const searchRegex = new RegExp(search.trim(), 'i'); // Case-insensitive search
       const amountSearch = parseFloat(search.replace(/[$,]/g, '')); // Parse potential amount search
-      
+
       filter.$or = [
         { description: searchRegex },
         { user_name: searchRegex },
@@ -201,10 +202,10 @@ app.get('/transactions', authenticateToken, async (req: AuthRequest, res: Respon
 
     // Build sort object
     let sortObject: any = { date: -1 }; // Default sort by date descending
-    
+
     if (sortBy && typeof sortBy === 'string') {
       const direction = sortOrder === 'asc' ? 1 : -1;
-      
+
       // Map frontend field names to backend field names if needed
       const fieldMap: { [key: string]: string } = {
         'description': 'description',
@@ -214,7 +215,7 @@ app.get('/transactions', authenticateToken, async (req: AuthRequest, res: Respon
         'user_name': 'user_name',
         'category': 'category'
       };
-      
+
       const dbField = fieldMap[sortBy] || sortBy;
       sortObject = { [dbField]: direction };
     }

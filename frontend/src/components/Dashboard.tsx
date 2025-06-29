@@ -56,7 +56,7 @@ const Dashboard: React.FC = () => {
   const [showRecentTransactions, setShowRecentTransactions] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  
+
   // Chart control state
   const [chartView, setChartView] = useState<'both' | 'income' | 'expenses'>('both');
   const [timePeriod, setTimePeriod] = useState<'weekly' | 'monthly' | 'yearly'>('monthly');
@@ -154,49 +154,49 @@ const Dashboard: React.FC = () => {
   // Chart data preparation with time period filtering
   const getFilteredChartData = () => {
     if (!analytics?.monthlyData) return [];
-    
+
     const baseData = analytics.monthlyData.map(item => ({
       month: item.month,
-      Income: item.income,
+      Balance: item.income,
       Expenses: item.expenses,
     }));
 
     switch (timePeriod) {
       case 'weekly':
         // Transform monthly data to weekly data (simulate 4 weeks per month)
-        const weeklyData: Array<{ month: string; Income: number; Expenses: number }> = [];
+        const weeklyData: Array<{ month: string; Balance: number; Expenses: number }> = [];
         baseData.slice(-3).forEach((monthData, monthIndex) => {
           const weeksInMonth = 4;
           for (let week = 1; week <= weeksInMonth; week++) {
             weeklyData.push({
               month: `${monthData.month} W${week}`,
-              Income: Math.round((monthData.Income / weeksInMonth) * (0.8 + Math.random() * 0.4)), // Add some variation
+              Balance: Math.round((monthData.Balance / weeksInMonth) * (0.8 + Math.random() * 0.4)), // Add some variation
               Expenses: Math.round((monthData.Expenses / weeksInMonth) * (0.8 + Math.random() * 0.4)),
             });
           }
         });
         return weeklyData;
-        
+
       case 'yearly':
         // Aggregate monthly data into yearly totals
         const currentYear = new Date().getFullYear();
         const years = [currentYear - 2, currentYear - 1, currentYear];
-        
+
         return years.map((year, index) => {
           // Use different chunks of monthly data for each year
           const startIndex = index * 4;
           const yearData = baseData.slice(startIndex, startIndex + 12);
-          
-          const totalIncome = yearData.reduce((sum, month) => sum + month.Income, 0);
+
+          const totalIncome = yearData.reduce((sum, month) => sum + month.Balance, 0);
           const totalExpenses = yearData.reduce((sum, month) => sum + month.Expenses, 0);
-          
+
           return {
             month: year.toString(),
-            Income: totalIncome,
+            Balance: totalIncome,
             Expenses: totalExpenses,
           };
         });
-        
+
       case 'monthly':
       default:
         // Return the last 12 months of data
@@ -261,7 +261,7 @@ const Dashboard: React.FC = () => {
             <TrendingUp className="w-6 h-6" />
           </div>
           <div className="stat-info">
-            <h3>Income</h3>
+            <h3>Balance</h3>
             <p>{formatCurrency(analytics?.totalIncome || 41210)}</p>
           </div>
         </div>
@@ -303,20 +303,20 @@ const Dashboard: React.FC = () => {
           <h2 className="overview-title">Overview</h2>
           <div className="overview-controls">
             <div className="toggle-buttons">
-              <button 
+              <button
                 onClick={() => handleChartViewChange('income')}
                 className={`toggle-btn ${chartView === 'income' ? 'active' : ''}`}
               >
-                Income
+                Balance
               </button>
-              <button 
+              <button
                 onClick={() => handleChartViewChange('expenses')}
                 className={`toggle-btn ${chartView === 'expenses' ? 'active' : ''}`}
               >
                 Expenses
               </button>
             </div>
-            <select 
+            <select
               value={timePeriod}
               onChange={(e) => handleTimePeriodChange(e.target.value as 'weekly' | 'monthly' | 'yearly')}
               className="bg-slate-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm"
@@ -325,6 +325,18 @@ const Dashboard: React.FC = () => {
               <option value="monthly">Monthly</option>
               <option value="yearly">Yearly</option>
             </select>
+          </div>
+        </div>
+
+        {/* Chart Legend */}
+        <div className="flex items-center justify-center gap-6 mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-green-500"></div>
+            <span className="text-sm text-gray-300">Balance</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
+            <span className="text-sm text-gray-300">Expenses</span>
           </div>
         </div>
 
@@ -337,19 +349,19 @@ const Dashboard: React.FC = () => {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="month" 
+                <XAxis
+                  dataKey="month"
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: '#9CA3AF', fontSize: 12 }}
                 />
-                <YAxis 
+                <YAxis
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: '#9CA3AF', fontSize: 12 }}
                   tickFormatter={formatYAxisTick}
                 />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{
                     backgroundColor: '#1F2937',
                     border: 'none',
@@ -360,23 +372,23 @@ const Dashboard: React.FC = () => {
                 />
                 {/* Conditionally render lines based on chartView */}
                 {(chartView === 'income' || chartView === 'both') && (
-                  <Line 
-                    type="monotone" 
-                    dataKey="Income" 
-                    stroke="#10B981" 
+                  <Line
+                    type="monotone"
+                    dataKey="Balance"
+                    stroke="#22C55E"
                     strokeWidth={3}
-                    dot={{ fill: '#10B981', strokeWidth: 2, r: 4 }}
-                    activeDot={{ r: 6, stroke: '#10B981', strokeWidth: 2 }}
+                    dot={{ fill: '#22C55E', strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6, stroke: '#22C55E', strokeWidth: 2 }}
                   />
                 )}
                 {(chartView === 'expenses' || chartView === 'both') && (
-                  <Line 
-                    type="monotone" 
-                    dataKey="Expenses" 
-                    stroke="#F59E0B" 
+                  <Line
+                    type="monotone"
+                    dataKey="Expenses"
+                    stroke="#EAB308"
                     strokeWidth={3}
-                    dot={{ fill: '#F59E0B', strokeWidth: 2, r: 4 }}
-                    activeDot={{ r: 6, stroke: '#F59E0B', strokeWidth: 2 }}
+                    dot={{ fill: '#EAB308', strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6, stroke: '#EAB308', strokeWidth: 2 }}
                   />
                 )}
               </LineChart>
@@ -389,7 +401,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-            {/* Transactions Section */}
+      {/* Transactions Section */}
       <div className="bg-slate-800 border border-gray-600 rounded-2xl overflow-hidden">
         <div className="p-6 border-b border-gray-600">
           <div className="flex justify-between items-center">
@@ -453,13 +465,13 @@ const Dashboard: React.FC = () => {
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-white">Recent Transactions</h3>
             <div className="flex items-center gap-2">
-              <button 
+              <button
                 onClick={() => navigate('/transactions')}
                 className="text-emerald-400 text-sm hover:text-emerald-300"
               >
                 See all
               </button>
-              <button 
+              <button
                 onClick={() => setShowRecentTransactions(false)}
                 className="text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-gray-700"
                 title="Close sidebar"
@@ -472,7 +484,7 @@ const Dashboard: React.FC = () => {
           <div className="space-y-4">
             {recentTransactions.slice(0, 6).map((transaction) => {
               const displayName = transaction.user_name || `User ${transaction.user_id}`;
-              
+
               return (
                 <div key={transaction._id} className="flex items-center gap-3">
                   {/* Profile Avatar */}
@@ -489,13 +501,13 @@ const Dashboard: React.FC = () => {
                       }}
                     />
                   ) : null}
-                  <div 
+                  <div
                     className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm"
                     style={{ display: transaction.user_profile ? 'none' : 'flex' }}
                   >
                     {displayName.charAt(0).toUpperCase()}
                   </div>
-                  
+
                   <div className="flex-1">
                     <div className="text-white font-medium text-sm">
                       {displayName}
@@ -504,9 +516,8 @@ const Dashboard: React.FC = () => {
                       {transaction.description || 'No description'}
                     </div>
                   </div>
-                  <div className={`font-semibold text-sm ${
-                    transaction.category === 'Revenue' ? 'text-emerald-400' : 'text-amber-400'
-                  }`}>
+                  <div className={`font-semibold text-sm ${transaction.category === 'Revenue' ? 'text-emerald-400' : 'text-amber-400'
+                    }`}>
                     {transaction.category === 'Revenue' ? '+' : '-'}{formatCurrency(transaction.amount || 0)}
                   </div>
                 </div>
@@ -695,7 +706,7 @@ const Dashboard: React.FC = () => {
             <p className="text-gray-400">Manage your account settings and preferences</p>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div>
@@ -773,7 +784,7 @@ const Dashboard: React.FC = () => {
             <p className="text-gray-400">Configure your application preferences</p>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white">Preferences</h3>
@@ -817,10 +828,10 @@ const Dashboard: React.FC = () => {
     </div>
   );
 
-  if (!user) {
-    navigate('/login');
-    return null;
-  }
+  // if (!user) {
+  //   navigate('/login');
+  //   return null;
+  // }
 
   return (
     <div className="dashboard-layout">
@@ -834,50 +845,50 @@ const Dashboard: React.FC = () => {
         </div>
 
         <nav className="sidebar-nav">
-          <Link 
-            to="/dashboard" 
+          <Link
+            to="/dashboard"
             className={`nav-item ${currentPage === 'dashboard' ? 'active' : ''}`}
           >
             <LayoutDashboard />
             <span>Dashboard</span>
           </Link>
-          <Link 
-            to="/transactions" 
+          <Link
+            to="/transactions"
             className={`nav-item ${currentPage === 'transactions' ? 'active' : ''}`}
           >
             <CreditCard />
             <span>Transactions</span>
           </Link>
-          <Link 
-            to="/wallet" 
+          <Link
+            to="/wallet"
             className={`nav-item ${currentPage === 'wallet' ? 'active' : ''}`}
           >
             <Wallet />
             <span>Wallet</span>
           </Link>
-          <Link 
-            to="/analytics" 
+          <Link
+            to="/analytics"
             className={`nav-item ${currentPage === 'analytics' ? 'active' : ''}`}
           >
             <BarChart3 />
             <span>Analytics</span>
           </Link>
-          <Link 
-            to="/personal" 
+          <Link
+            to="/personal"
             className={`nav-item ${currentPage === 'personal' ? 'active' : ''}`}
           >
             <User />
             <span>Personal</span>
           </Link>
-          <Link 
-            to="/message" 
+          <Link
+            to="/message"
             className={`nav-item ${currentPage === 'message' ? 'active' : ''}`}
           >
             <MessageSquare />
             <span>Message</span>
           </Link>
-          <Link 
-            to="/setting" 
+          <Link
+            to="/setting"
             className={`nav-item ${currentPage === 'setting' ? 'active' : ''}`}
           >
             <Settings />
@@ -892,14 +903,14 @@ const Dashboard: React.FC = () => {
         <header className="header">
           <h1 className="header-title">
             {currentPage === 'dashboard' ? 'Dashboard' :
-             currentPage === 'transactions' ? 'Transactions' :
-             currentPage === 'wallet' ? 'Wallet' :
-             currentPage === 'analytics' ? 'Analytics' :
-             currentPage === 'personal' ? 'Personal' :
-             currentPage === 'message' ? 'Messages' :
-             currentPage === 'setting' ? 'Settings' : 'Dashboard'}
+              currentPage === 'transactions' ? 'Transactions' :
+                currentPage === 'wallet' ? 'Wallet' :
+                  currentPage === 'analytics' ? 'Analytics' :
+                    currentPage === 'personal' ? 'Personal' :
+                      currentPage === 'message' ? 'Messages' :
+                        currentPage === 'setting' ? 'Settings' : 'Dashboard'}
           </h1>
-          
+
           <div className="header-search">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
@@ -915,7 +926,7 @@ const Dashboard: React.FC = () => {
 
           <div className="header-actions">
             <Bell className="notification-icon" />
-            <div 
+            <div
               className="user-avatar"
               onClick={handleLogout}
               title="Click to logout"
